@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  FaCheck,
-  FaPencilAlt,
-  FaPlus,
-  FaSearch,
-  FaTrash,
-} from "react-icons/fa";
+import { FaCheck, FaPencilAlt, FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import { ToastContainer } from "react-toastify";
 import { CreateTask, DeleteTaskById, GetAllTasks, UpdateTaskById } from "./api";
 import { notify } from "../src/utils";
@@ -15,11 +9,9 @@ function TaskManager() {
   const [tasks, setTasks] = useState([]);
   const [copyTasks, setCopyTasks] = useState([]);
   const [updateTask, setUpdateTask] = useState(null);
-  
 
   const handleTask = () => {
     if (updateTask && input) {
-      //update api call
       const obj = {
         taskName: input,
         isDone: updateTask.isDone,
@@ -27,7 +19,6 @@ function TaskManager() {
       };
       handelUpdateItem(obj);
     } else if (updateTask === null && input) {
-      //create api call
       handleAddTask();
     }
     setInput("");
@@ -47,16 +38,14 @@ function TaskManager() {
     try {
       const { success, message } = await CreateTask(obj);
       if (success) {
-        //show success toast
         notify(message, "success");
       } else {
-        //show error toast
         notify(message, "error");
       }
       fetchAllTasks();
     } catch (err) {
       console.log(err);
-      notify("Failed to create task", "success");
+      notify("Failed to create task", "error");
     }
   };
 
@@ -67,9 +56,10 @@ function TaskManager() {
       setCopyTasks(data);
     } catch (err) {
       console.log(err);
-      notify("Failed to fetch tasks", "success");
+      notify("Failed to fetch tasks", "error");
     }
   };
+
   useEffect(() => {
     fetchAllTasks();
   }, []);
@@ -78,16 +68,14 @@ function TaskManager() {
     try {
       const { success, message } = await DeleteTaskById(id);
       if (success) {
-        //show success toast
         notify(message, "success");
       } else {
-        //show error toast
         notify(message, "error");
       }
       fetchAllTasks();
     } catch (err) {
       console.log(err);
-      notify("Failed to delete task", "success");
+      notify("Failed to delete task", "error");
     }
   };
 
@@ -100,16 +88,14 @@ function TaskManager() {
     try {
       const { success, message } = await UpdateTaskById(_id, obj);
       if (success) {
-        //show success toast
         notify(message, "success");
       } else {
-        //show error toast
         notify(message, "error");
       }
       fetchAllTasks();
     } catch (err) {
       console.log(err);
-      notify("Failed to delete task", "success");
+      notify("Failed to update task", "error");
     }
   };
 
@@ -122,16 +108,14 @@ function TaskManager() {
     try {
       const { success, message } = await UpdateTaskById(_id, obj);
       if (success) {
-        //show success toast
         notify(message, "success");
       } else {
-        //show error toast
         notify(message, "error");
       }
       fetchAllTasks();
     } catch (err) {
       console.log(err);
-      notify("Failed to delete task", "success");
+      notify("Failed to update task", "error");
     }
   };
 
@@ -146,32 +130,10 @@ function TaskManager() {
     );
     setTasks(results);
   };
-
   return (
-    <div className="d-flex flex-column align-items-center w-50 m-auto mt-5">
+  <div className="d-flex flex-column align-items-center w-50 m-auto mt-5">
       <h1 className="mb-4">ToDo App</h1>
-      {/*Input and Search box*/}
-      <div className="btn-group mb-3">
-        <button
-          className="btn btn-outline-primary"
-          onClick={() => setTasks(copyTasks)}
-        >
-          All
-        </button>
-        <button
-          className="btn btn-outline-success"
-          onClick={() => setTasks(copyTasks.filter((t) => t.isDone))}
-        >
-          Completed
-        </button>
-        <button
-          className="btn btn-outline-warning"
-          onClick={() => setTasks(copyTasks.filter((t) => !t.isDone))}
-        >
-          Pending
-        </button>
-      </div>
-
+      {/* Input and Search box */}
       <div className="d-flex justify-content-between align-items-center mb-4 w-100">
         <div className="input-group flex-grow-1 me-1">
           <input
@@ -198,37 +160,54 @@ function TaskManager() {
           />
         </div>
       </div>
-      {/*List of tasks*/}
-      <div className="d-flex flex-column w-100">
+
+      <div className="btn-group mb-3">
+        <button
+          className="btn btn-outline-primary"
+          onClick={() => setTasks(copyTasks)}
+        >
+          All
+        </button>
+        <button
+          className="btn btn-outline-success"
+          onClick={() => setTasks(copyTasks.filter((t) => t.isDone))}
+        >
+          Completed
+        </button>
+        <button
+          className="btn btn-outline-warning"
+          onClick={() => setTasks(copyTasks.filter((t) => !t.isDone))}
+        >
+          Pending
+        </button>
+      </div>
+
+      {/* List of tasks with interactive background */}
+      <div className="task-list w-100">
         {tasks.map((item) => (
           <div
             key={item._id}
-            className="m-2 p-2 border bg-light w-100 rounded-3 d-flex justify-content-between align-iten-center"
+            className={`task-item ${item.isDone ? "done" : ""}`}
           >
             <span className={item.isDone ? "text-decoration-line-through" : ""}>
               {item.taskName}
             </span>
-            <div className="">
+            <div className="task-actions">
               <button
                 onClick={() => handleCheckAndUncheck(item)}
                 className="btn btn-success btn-sm me-2"
-                type="button"
               >
                 <FaCheck />
               </button>
               <button
                 onClick={() => setUpdateTask(item)}
                 className="btn btn-primary btn-sm me-2"
-                type="button"
               >
                 <FaPencilAlt />
               </button>
               <button
-                onClick={(id) => {
-                  handleDeleteTask(item._id);
-                }}
+                onClick={() => handleDeleteTask(item._id)}
                 className="btn btn-danger btn-sm me-2"
-                type="button"
               >
                 <FaTrash />
               </button>
@@ -236,6 +215,7 @@ function TaskManager() {
           </div>
         ))}
       </div>
+
       <ToastContainer
         position="top-right"
         autoClose={3000}
