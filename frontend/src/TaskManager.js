@@ -128,6 +128,19 @@ function TaskManager() {
         }
     }
 
+    const handleSearch = (e) => {
+        const term = e.target.value.toLowerCase();
+        if (!term) {
+          setTasks(copyTasks);
+          return;
+        }
+        const results = copyTasks.filter((item) =>
+          item.taskName.toLowerCase().includes(term)
+        );
+        setTasks(results);
+      };
+      
+
   return (
     <div className='d-flex flex-column align-items-center w-50 m-auto mt-5'>
       <h1 className='mb-4'>ToDo App</h1>
@@ -141,7 +154,7 @@ function TaskManager() {
       </div>
       <div className='input-group flex-grow-1'>
         <span className='input-group-text'> <FaSearch/></span>
-        <input type='text' className='form-control' placeholder='Search Tasks'/>
+        <input onChange={handleSearch} type='text' className='form-control' placeholder='Search Tasks'/>
       </div>
       </div>
       {/*List of tasks*/}
